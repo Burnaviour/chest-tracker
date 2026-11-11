@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>Burnaviour Chest Tracker</AssemblyName>
+    <RootNamespace>ChestCounter</RootNamespace>
+    <Title>Burnaviour Chest Tracker</Title>
+    <Product>Burnaviour Chest Tracker</Product>
+    <Company>Burnaviour</Company>
+    <Authors>Burnaviour</Authors>
+    <Description>Burnaviour Chest Tracker: Fortnite chest counter, Treasure Hunt odds and OBS overlay</Description>
+    <Copyright>Copyright © 2026 Burnaviour. Includes MIT-licensed code, see THIRD-PARTY-NOTICES.md.</Copyright>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <!-- Uncompressed single-file publishing; antivirus results depend on the scanner. -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <!-- Small idle footprint -->
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <TieredPGO>true</TieredPGO>
+    <NoWarn>$(NoWarn);MSB3277</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\FortniteReplayReader\FortniteReplayReader.csproj" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" />
+    <EmbeddedResource Include="..\..\ui\**\*" LinkBase="public" />
+  </ItemGroup>
+</Project>

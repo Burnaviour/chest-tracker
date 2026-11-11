@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Burnaviour Chest Tracker</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="top">
+      <a class="brand" href="https://burnaviour.dev" target="_blank" rel="noopener">
+        <img src="assets/logo.jpg" width="34" height="34" alt="">
+        <span><strong>Burnaviour</strong><small>Chest Tracker <span class="version"></span></small></span>
+      </a>
+      <span class="status" id="status"><i></i><span id="statusText"></span></span>
+      <select id="language" class="select" aria-label="Language"></select>
+    </header>
+
+    <nav class="tabs">
+      <button type="button" class="tab active" data-tab="tabStats" data-i18n="dashboard">Dashboard</button>
+      <button type="button" class="tab" data-tab="tabTreasure" data-i18n="treasureTab">Treasure Hunt</button>
+      <button type="button" class="tab" data-tab="tabOverlay" data-i18n="overlay">Stream overlay</button>
+      <button type="button" class="tab" data-tab="tabSettings" data-i18n="settings">Settings</button>
+    </nav>
+
+    <main class="body">
+      <!-- Dashboard -->
+      <section id="tabStats" class="pane active">
+        <div class="card row">
+          <div>
+            <div class="eyebrow" data-i18n="profile">Player profile</div>
+            <div class="player" id="player">—</div>
+          </div>
+          <select id="profile" class="select" aria-label="Player profile"></select>
+        </div>
+
+        <div class="card hero">
+          <div class="eyebrow" data-i18n="total">Chests tracked</div>
+          <div class="big" id="total">0</div>
+          <div class="dim" id="totalHint"></div>
+          <div class="live" id="matchStatus" hidden><i></i><span data-i18n="matchLive">Match in progress</span></div>
+          <div class="tiles">
+            <div class="tile"><b id="lastMatch">0</b><span data-i18n="lastMatch">Last match</span></div>
+            <div class="tile"><b id="session">0</b><span data-i18n="session">This session</span></div>
+            <div class="tile"><b id="average">0</b><span data-i18n="average">Chests / match</span></div>
+            <div class="tile"><b id="best">0</b><span data-i18n="bestMatch">Best match</span></div>
+            <div class="tile"><b id="perMinute">0</b><span data-i18n="perMinute">Chests / minute</span></div>
+            <div class="tile"><b id="victories">0</b><span data-i18n="victories">Victories</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><span data-i18n="activity">Your activity</span> <small data-i18n="last30">Last 30 days</small></h2>
+          <div class="chart" id="chart" role="img"></div>
+          <div class="axis"><span id="chartStart"></span><span id="chartEmpty" data-i18n="noActivity"></span><span id="chartEnd"></span></div>
+        </div>
+
+        <div class="card">
+          <h2 data-i18n="chestKinds">Chests by type</h2>
+          <div id="kinds" class="kinds"></div>
+        </div>
+
+        <div class="card">
+          <h2 class="row"><span data-i18n="history">Match history</span><button type="button" class="btn small" id="export" data-i18n="export">Export CSV</button></h2>
+          <div class="scroll">
+            <table>
+              <thead><tr><th data-i18n="date">Date</th><th data-i18n="mode">Mode</th><th data-i18n="placement">Placement</th><th class="num" data-i18n="chests">Chests</th><th class="num" data-i18n="eliminations">Eliminations</th></tr></thead>
+              <tbody id="matchRows"></tbody>
+            </table>
+          </div>
+          <div class="row pager" id="pagination"><span id="pageLabel" class="dim"></span><span><button type="button" class="btn small" id="previous" data-i18n="previous">Previous</button> <button type="button" class="btn small" id="next" data-i18n="next">Next</button></span></div>
+        </div>
+      </section>
+
+      <!-- Treasure Hunt -->
+      <section id="tabTreasure" class="pane">
+        <div class="card hour" id="hourCard">
+          <div class="eyebrow" id="hourLabel"></div>
+          <div class="big small" id="hourCountdown">—</div>
+          <div class="dim" id="hourWhen"></div>
+        </div>
+
+        <div class="card">
+          <h2><span id="weekTitle"></span> <small id="weekEnds"></small></h2>
+          <div class="tiles two">
+            <div class="tile"><b id="weekChests">0</b><span data-i18n="chestsThisWeek">Chests this week</span></div>
+            <div class="tile"><b id="huntChests">0</b><span data-i18n="chestsThisHunt">Chests this hunt</span></div>
+            <div class="tile"><b id="hourChests">0</b><span data-i18n="chestsInHours">Opened in Treasure Hours</span></div>
+            <div class="tile"><b id="gizmoLuck">—</b><span data-i18n="gizmoLuck">Gizmo luck</span></div>
+          </div>
+          <p class="dim" data-i18n="huntNote"></p>
+        </div>
+
+        <div class="card">
+          <h2 data-i18n="yourOdds">Your odds so far</h2>
+          <div class="scroll">
+            <table>
+              <thead><tr><th data-i18n="treasure">Treasure</th><th class="num" data-i18n="perChest">Per chest</th><th class="num" data-i18n="yourChests">Your chests</th><th class="num" data-i18n="chanceSoFar">Chance so far</th></tr></thead>
+              <tbody id="oddsRows"></tbody>
+            </table>
+          </div>
+          <p class="dim" data-i18n="oddsNote"></p>
+        </div>
+
+        <div class="card">
+          <h2 data-i18n="planner">What it takes</h2>
+          <select id="target" class="select wide" aria-label="Treasure"></select>
+          <div class="tiles two">
+            <div class="tile"><b id="planHalf">—</b><span data-i18n="planHalf">Chests for a 50% chance</span></div>
+            <div class="tile"><b id="planNinety">—</b><span data-i18n="planNinety">Chests for a 90% chance</span></div>
+            <div class="tile"><b id="planMatches">—</b><span data-i18n="planMatches">Matches at your pace (50%)</span></div>
+            <div class="tile"><b id="planEnd">—</b><span id="planEndLabel"></span></div>
+          </div>
+          <p class="dim" id="planNote"></p>
+        </div>
+
+        <div class="card">
+          <h2 data-i18n="found">Treasure found</h2>
+          <ul id="finds" class="finds"></ul>
+        </div>
+
+        <a class="btn gold" href="https://burnaviour.dev/treasure-hunt/" target="_blank" rel="noopener" data-i18n="seeTreasure">See this week's treasure on burnaviour.dev</a>
+      </section>
+
+      <!-- Stream overlay -->
+      <section id="tabOverlay" class="pane">
+        <div class="card">
+          <h2 data-i18n="overlay">Stream overlay</h2>
+          <div class="preview"><div class="pill"><img src="assets/chest.png" width="46" height="46" alt=""><span class="pill-text"><small id="previewLabel" hidden></small><span><strong id="previewTotal">0</strong><em id="previewLast" hidden>+0</em></span></span></div></div>
+          <code id="overlayUrl" class="url"></code>
+          <p class="dim" data-i18n="overlayHint"></p>
+          <div class="row"><button type="button" class="btn primary" id="copyOverlay" data-i18n="copy">Copy URL</button><a class="btn" id="previewOverlay" target="_blank" rel="noopener" data-i18n="preview">Preview</a></div>
+        </div>
+        <div class="card">
+          <h2 data-i18n="overlayEdit">Edit overlay</h2>
+          <label class="check"><input type="checkbox" id="showOverlayLabel"><span data-i18n="overlayShowLabel">Show a label</span></label>
+          <input id="overlayLabel" class="input" type="text" maxlength="64" autocomplete="off" dir="auto">
+          <label class="check"><input type="checkbox" id="showOverlayLast"><span data-i18n="overlayShowLast">Show + last match</span></label>
+        </div>
+        <details class="card">
+          <summary data-i18n="setup">Setup guide</summary>
+          <ol class="steps">
+            <li><b data-i18n="step1"></b><span data-i18n="step1Body"></span></li>
+            <li><b data-i18n="step2"></b><span data-i18n="step2Body"></span></li>
+            <li><b data-i18n="step3"></b><span data-i18n="step3Body"></span></li>
+          </ol>
+        </details>
+      </section>
+
+      <!-- Settings -->
+      <section id="tabSettings" class="pane">
+        <form class="card" id="baseForm">
+          <label for="base" data-i18n="base">Starting chest count</label>
+          <p class="dim" data-i18n="historyNotice"></p>
+          <div class="row"><input id="base" class="input" type="number" min="0" max="2147483647" step="1" inputmode="numeric"><button class="btn primary" data-i18n="save">Save</button><button type="button" class="btn" id="resetBase" data-i18n="reset">Reset</button></div>
+        </form>
+        <form class="card" id="folderForm">
+          <label for="folder" data-i18n="folder">Replay folder</label>
+          <div class="row"><input id="folder" class="input" dir="ltr" autocomplete="off"><button class="btn" data-i18n="save">Save</button></div>
+        </form>
+        <div class="card">
+          <label class="check"><input type="checkbox" id="startup"><span data-i18n="startup">Start with Windows</span></label>
+        </div>
+        <div class="card">
+          <label class="check"><input type="checkbox" id="gameOverlay"><span data-i18n="gameOverlay">Show the counter over the game</span></label>
+          <p class="dim" data-i18n="gameOverlayHint"></p>
+          <p class="warn" id="fullscreenWarning" data-i18n="fullscreenWarning" hidden></p>
+        </div>
+        <div class="card row">
+          <label data-i18n="appZoom">App zoom</label>
+          <span class="row tight"><button type="button" class="btn small" id="zoomOut" aria-label="Zoom out">−</button><output id="zoomValue">100%</output><button type="button" class="btn small" id="zoomIn" aria-label="Zoom in">+</button><button type="button" class="btn small" id="resetZoom" data-i18n="reset">Reset</button></span>
+        </div>
+        <p class="dim center" data-i18n="privacy"></p>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <a href="https://burnaviour.dev" target="_blank" rel="noopener">burnaviour.dev</a>
+      <button type="button" class="code" id="creatorCode"><span data-i18n="useCode">Use code</span> <strong>BRNYT</strong></button>
+    </footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

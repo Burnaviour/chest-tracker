@@ -1,0 +1,30 @@
+# Build output
+bin/
+obj/
+dist/
+publish/
+*.exe
+*.pdb
+
+# The app's own data when run from this folder (replay counts, reports, logs)
+test-data*/
+*.log
+
+# Promo video working files
+promo/out/
+promo/.venv/
+__pycache__/
+*.pyc
+
+# Editors and Windows
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+Thumbs.db
+desktop.ini
+
+# Secrets (none are needed, but never commit one)
+.env
+.env.*
