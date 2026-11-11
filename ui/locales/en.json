@@ -121,6 +121,11 @@
   "oneIn": "1 in {n}",
   "expected": "{n} expected, {found} found",
   "gameOverlay": "Show the counter over the game",
-  "gameOverlayHint": "A small always-on-top counter, no OBS needed. Set Fortnite to Windowed Fullscreen (it cannot draw over exclusive Fullscreen). Drag it where you want, then press Ctrl+Shift+L to lock it so clicks pass through. Ctrl+Shift+O shows or hides it.",
-  "fullscreenWarning": "Fortnite is set to Fullscreen, so the counter cannot show over it. In Fortnite: Settings → Video → Window Mode → Windowed Fullscreen, then Apply."
+  "gameOverlayHint": "A small always-on-top counter, no OBS needed. Set Fortnite to Windowed Fullscreen (it cannot draw over exclusive Fullscreen). Unlocked, you can drag it where you want.",
+  "fullscreenWarning": "Fortnite is set to Fullscreen, so the counter cannot show over it. In Fortnite: Settings → Video → Window Mode → Windowed Fullscreen, then Apply.",
+  "overlayLock": "Lock the counter in place",
+  "overlayLockHint": "Locked: it cannot move and clicks pass through it to the game. Unlock it to drag it somewhere else.",
+  "keyLock": "lock / unlock",
+  "keyShow": "show / hide",
+  "shortcutWarning": "Another program already uses one of these shortcuts, so it will not work here. Use the switches above instead."
 }

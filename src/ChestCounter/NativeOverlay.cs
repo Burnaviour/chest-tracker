@@ -124,6 +124,15 @@ public static class NativeOverlay
         return ok;
     }
 
+    /// <summary>Locks (click-through, cannot move) or unlocks the counter.</summary>
+    public static void SetLocked(bool locked)
+    {
+        if (_locked != locked)
+        {
+            ToggleLock();
+        }
+    }
+
     public static void ToggleLock()
     {
         if (_hwnd != IntPtr.Zero)

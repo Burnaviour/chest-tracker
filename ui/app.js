@@ -209,6 +209,15 @@ function showZoom(percent) {
 async function setZoom(percent) {
   try { showZoom((await api('/api/set-zoom?percent=' + percent)).uiZoomPercent); } catch { toast('error'); }
 }
+// The counter over the game can be locked or hidden with its shortcuts, so its switches follow what it is doing
+async function loadOverlayState() {
+  try {
+    const state = await api('/api/overlay-state');
+    $('gameOverlay').checked = state.visible;
+    $('overlayLock').checked = state.locked; $('overlayLock').disabled = !state.visible;
+    $('shortcutWarning').hidden = !state.visible || (state.lockShortcut && state.showShortcut);
+  } catch { /* older app: leave the switches as they are */ }
+}
 async function loadSettings() {
   try {
     const data = await api('/api/settings');
@@ -240,6 +249,7 @@ async function poll() {
     snapshot = data; online = true;
     if (data.overlayOptions && !overlayDirty) showOverlayOptions(data.overlayOptions);
     if (!settingsLoaded) await loadSettings();
+    await loadOverlayState();
     // New chests or another profile: the hunt numbers change too
     const key = `${data.player}|${data.total}|${data.matches?.length}|${data.liveChests}`;
     if (key !== huntKey) { huntKey = key; await loadHunt(); }
@@ -284,7 +294,11 @@ $('startup').onchange = async event => {
   catch { event.target.checked = !event.target.checked; toast('error'); }
 };
 $('gameOverlay').onchange = async event => {
-  try { await api('/api/set-game-overlay?enabled=' + event.target.checked); toast('saved'); }
+  try { await api('/api/set-game-overlay?enabled=' + event.target.checked); await loadOverlayState(); toast('saved'); }
+  catch { event.target.checked = !event.target.checked; toast('error'); }
+};
+$('overlayLock').onchange = async event => {
+  try { await api('/api/set-overlay-lock?enabled=' + event.target.checked); toast('saved'); }
   catch { event.target.checked = !event.target.checked; toast('error'); }
 };
 $('zoomOut').onclick = () => setZoom(zoom - 10);

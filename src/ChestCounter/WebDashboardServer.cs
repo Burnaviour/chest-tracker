@@ -354,6 +354,28 @@ public static class WebDashboardServer
                 return;
             }
 
+            // The counter over the game: what it is doing now (the shortcuts can change it at any time)
+            if (path.Equals("/api/overlay-state", StringComparison.OrdinalIgnoreCase))
+            {
+                var windows = OperatingSystem.IsWindows();
+                WriteJson(res, new
+                {
+                    visible = windows && NativeOverlay.IsVisible,
+                    locked = windows && NativeOverlay.IsLocked,
+                    lockShortcut = windows && NativeOverlay.LockHotkeyRegistered,
+                    showShortcut = windows && NativeOverlay.HotkeyRegistered,
+                });
+                return;
+            }
+            if (path.Equals("/api/set-overlay-lock", StringComparison.OrdinalIgnoreCase))
+            {
+                var on = (req.QueryString["enabled"] ?? "") is "true" or "1";
+                if (!OperatingSystem.IsWindows() || !NativeOverlay.IsRunning) { res.StatusCode = 409; res.Close(); return; }
+                NativeOverlay.SetLocked(on);
+                WriteJson(res, new { ok = true, locked = on });
+                return;
+            }
+
             // 2e. Set Custom Demos Folder API
             if (path.Equals("/api/set-demos-folder", StringComparison.OrdinalIgnoreCase))
             {
