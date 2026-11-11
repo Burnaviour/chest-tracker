@@ -9,6 +9,14 @@ By [Burnaviour](https://burnaviour.dev). Support-A-Creator code: **BRNYT**.
 - Does not touch the game: no injection, no game memory, no game files changed. It only reads finished replays.
 - Windows 10 or 11, 64-bit. Console and cloud players cannot use it, because their replays are not on a PC.
 
+## Download
+
+Get **BurnaviourChestTracker.exe** from the [latest release](https://github.com/Burnaviour/chest-tracker/releases/latest)
+and run it. There is nothing to install: one file, about 160 MB because it carries everything it needs.
+
+The file is not code-signed, so Windows may show "Windows protected your PC" the first time. Choose
+**More info → Run anyway**. Each release lists the file's SHA-256 so you can check your download.
+
 ## What you get
 
 | Tab | What it shows |
