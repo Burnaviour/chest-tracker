@@ -10,12 +10,6 @@ publish/
 test-data*/
 *.log
 
-# Promo video working files
-promo/out/
-promo/.venv/
-__pycache__/
-*.pyc
-
 # Editors and Windows
 .vs/
 .vscode/
