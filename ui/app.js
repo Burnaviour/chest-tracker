@@ -291,6 +291,9 @@ $('zoomOut').onclick = () => setZoom(zoom - 10);
 $('zoomIn').onclick = () => setZoom(zoom + 10);
 $('resetZoom').onclick = () => setZoom(100);
 
+// A link can open a tab directly: app.html#tabTreasure
+document.querySelector(`.tab[data-tab="${CSS.escape(location.hash.slice(1))}"]`)?.click();
+
 let savedLanguage;
 try { savedLanguage = localStorage.getItem(LANGUAGE_KEY); } catch {}
 await setLanguage(resolveLanguage(new URLSearchParams(location.search).get('lang') || savedLanguage || navigator.language));
