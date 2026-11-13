@@ -1,5 +1,10 @@
 # Burnaviour Chest Tracker
 
+[![Downloads](https://img.shields.io/github/downloads/Burnaviour/chest-tracker/total?label=downloads&color=dac996)](https://github.com/Burnaviour/chest-tracker/releases)
+[![Latest release downloads](https://img.shields.io/github/downloads/Burnaviour/chest-tracker/latest/total?label=latest%20release&color=7c3aed)](https://github.com/Burnaviour/chest-tracker/releases/latest)
+[![Version](https://img.shields.io/github/v/release/Burnaviour/chest-tracker?label=version&color=a78bfa)](https://github.com/Burnaviour/chest-tracker/releases/latest)
+![Views](https://visitor-badge.laobi.icu/badge?page_id=Burnaviour.chest-tracker&left_text=views)
+
 A free Windows app that counts every chest you open in Fortnite and tells you what that means for the
 Treasure Hunt: your real odds, the next Treasure Hour, and every treasure you have found.
 
