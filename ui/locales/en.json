@@ -162,5 +162,6 @@
   "rarity_legendary": "Legendary",
   "rarity_mythic": "Mythic",
   "goldPer100": "Legendary per 100 chests",
-  "bestLoot": "Most gold in one match"
+  "bestLoot": "Most gold in one match",
+  "requestFeature": "Request a feature"
 }

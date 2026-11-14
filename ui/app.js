@@ -261,6 +261,7 @@ async function loadSettings() {
     $('gameOverlay').checked = !!data.gameOverlay;
     $('fullscreenWarning').hidden = data.fortniteWindowMode !== 0;
     document.querySelectorAll('.version').forEach(node => { node.textContent = data.version || ''; });
+    if (/^v\d+\.\d+\.\d+$/.test(data.version || '')) $('requestFeature').href = `https://burnaviour.dev/request/?for=chest-tracker&v=${data.version.slice(1)}`;
     if (data.overlayOptions && !overlayDirty) showOverlayOptions(data.overlayOptions);
     if (!savedLanguage && data.uiLanguage && data.uiLanguage !== locale) { await setLanguage(data.uiLanguage); $('language').value = locale; }
     settingsLoaded = true;
