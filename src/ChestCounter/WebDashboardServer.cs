@@ -355,6 +355,36 @@ public static class WebDashboardServer
             }
 
             // The counter over the game: what it is doing now (the shortcuts can change it at any time)
+            // Updates
+            if (path.Equals("/api/update", StringComparison.OrdinalIgnoreCase))
+            {
+                WriteJson(res, UpdateView());
+                return;
+            }
+            if (path.Equals("/api/update/check", StringComparison.OrdinalIgnoreCase))
+            {
+                if (req.HttpMethod != "POST") { res.StatusCode = 405; res.Close(); return; }
+                Updater.CheckAsync().GetAwaiter().GetResult();
+                WriteJson(res, UpdateView());
+                return;
+            }
+            if (path.Equals("/api/update/install", StringComparison.OrdinalIgnoreCase))
+            {
+                if (req.HttpMethod != "POST") { res.StatusCode = 405; res.Close(); return; }
+                WriteJson(res, new { ok = Updater.InstallInBackground() });
+                return;
+            }
+            if (path.Equals("/api/set-update-mode", StringComparison.OrdinalIgnoreCase))
+            {
+                var mode = req.QueryString["mode"];
+                if (_config == null || _store == null || mode is not ("auto" or "prompt" or "off")) { res.StatusCode = 400; res.Close(); return; }
+                _config.UpdateMode = mode;
+                _config.UpdateModeChosen = true;
+                _store.SaveConfig(_config);
+                WriteJson(res, UpdateView());
+                return;
+            }
+
             if (path.Equals("/api/overlay-state", StringComparison.OrdinalIgnoreCase))
             {
                 var windows = OperatingSystem.IsWindows();
@@ -719,6 +749,19 @@ public static class WebDashboardServer
         catch { /* no settings file: unknown */ }
         return -1;
     }
+
+    private static object UpdateView() => new
+    {
+        current = "v" + Updater.Current.ToString(3),
+        latest = Updater.Latest is { } r ? "v" + r.Version.ToString(3) : null,
+        hasUpdate = Updater.HasUpdate,
+        notesUrl = Updater.Latest?.NotesUrl,
+        mode = _config?.UpdateMode ?? "auto",
+        state = Updater.State,
+        error = Updater.LastError,
+        checkedAt = Updater.LastCheckUtc?.ToString("o"),
+        canInstall = Updater.CanInstall,
+    };
 
     private static string EscapeJson(string s) => System.Text.Json.JsonSerializer.Serialize(s ?? "")[1..^1];
 

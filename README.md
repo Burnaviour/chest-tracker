@@ -10,7 +10,8 @@ Treasure Hunt: your real odds, the next Treasure Hour, and every treasure you ha
 
 By [Burnaviour](https://burnaviour.dev). Support-A-Creator code: **BRNYT**.
 
-- Reads the replay files Fortnite saves on your PC. Nothing is uploaded and the app makes no network requests.
+- Reads the replay files Fortnite saves on your PC. Nothing is uploaded. The only thing it fetches is the update check from
+  this repository's releases, which you can turn off.
 - Does not touch the game: no injection, no game memory, no game files changed. It only reads finished replays.
 - Windows 10 or 11, 64-bit. Console and cloud players cannot use it, because their replays are not on a PC.
 
@@ -74,6 +75,18 @@ its own history, even after Fortnite deletes a replay.
 
 Add a **Browser Source** with the address `http://localhost:5088/overlay`, width 420, height 120. Keep the tracker
 running on the same PC as OBS. The label and the "+ last match" number are set in the **Stream overlay** tab.
+
+### Updates
+
+The app checks this repository's releases when it starts and every 6 hours. **Settings → Updates** has three choices:
+
+- **Install updates automatically** (default): a new version downloads and installs between matches, never during one,
+  and the app restarts by itself.
+- **Tell me when there is an update**: a banner offers the new version; you choose when to install it.
+- **Don't check for updates.**
+
+A download is installed only when its size and SHA-256 match what GitHub lists for the release. Updates work in the
+downloaded `.exe`; a copy run from source does not replace itself.
 
 ## Treasure Hunt numbers
 

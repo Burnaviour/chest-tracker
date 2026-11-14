@@ -403,6 +403,13 @@ WebDashboardServer.SetGameOverlay = on =>
 };
 
 WebDashboardServer.Start(store, config, data, () => tracker.IsLive, () => tracker.LiveMatch);
+Updater.CleanupOld(); // what the last update left behind
+if (!config.UpdateModeChosen)
+{
+    config.UpdateMode = "auto"; // automatic updates for everyone who never chose
+    config.UpdateModeChosen = true;
+    try { store.SaveConfig(config); } catch { /* ignore */ }
+}
 
 if (OperatingSystem.IsWindows())
 {
@@ -476,6 +483,10 @@ if (auto && OperatingSystem.IsWindows())
 var quit = false;
 var restart = false;
 var wake = new AutoResetEvent(false);
+
+// Updates: once a new version is in place, the app closes and starts it
+Updater.RequestRestart = () => { restart = true; quit = true; wake.Set(); };
+var startedUtc = DateTime.UtcNow;
 
 // Opened with Fortnite: closes itself once Fortnite is closed and the last match is counted.
 DateTime? autoCloseAt = null;
@@ -606,6 +617,20 @@ try
             CheckAutoClose();
         }
 
+        // Updates: look for a new version (a minute after starting, then every 6 hours). In automatic mode, install it
+        // between matches, never during one, and try each version only once.
+        if (config.UpdateMode != "off" && Updater.CheckDue(startedUtc))
+        {
+            _ = Task.Run(async () => { await Updater.CheckAsync(); wake.Set(); });
+        }
+        if (config.UpdateMode == "auto" && Updater.HasUpdate && Updater.CanInstall && !Updater.Busy
+            && Updater.Latest!.Tag != config.UpdateAttemptedTag && !tracker.IsLive && !tracker.HasPending && !tracker.IsFinishing)
+        {
+            config.UpdateAttemptedTag = Updater.Latest.Tag;
+            try { store.SaveConfig(config); } catch { /* ignore */ }
+            Updater.InstallInBackground();
+        }
+
         // Sleep until something happens (file change, key press) or the next scheduled scan.
         var wait = nextScan - DateTime.UtcNow;
         TraceLog($"Sleeping for {wait.TotalMilliseconds:F0}ms...");
@@ -688,7 +713,7 @@ if (OperatingSystem.IsWindows() && MainGuiForm.CurrentInstance is { } gui)
 {
     try
     {
-        gui.Invoke(() => gui.Close());
+        gui.Invoke(() => gui.ExitApp());
     }
     catch { /* ignore */ }
 }
@@ -697,6 +722,7 @@ if (restart && AppInfo.ExePath is { } newExe)
 {
     try { instance.ReleaseMutex(); } catch { }
     var restartArgs = string.Join(" ", args.Where(a => a != "--after-update").Select(a => a.Contains(' ') ? $"\"{a}\"" : a).Append("--after-update"));
+    WebDashboardServer.Stop(); // free the port for the new version
     Process.Start(new ProcessStartInfo(newExe, restartArgs) { UseShellExecute = true })?.Dispose();
     return 0;
 }

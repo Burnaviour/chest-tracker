@@ -323,11 +323,18 @@ public class MainGuiForm : Form
         _webView.ZoomFactor = Math.Clamp(percent, 50, 150) / 100.0;
     }
 
+    /// <summary>Closes the window for good (quitting, or restarting after an update), instead of hiding it in the tray.</summary>
+    public void ExitApp()
+    {
+        _allowExit = true;
+        Close();
+    }
+
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         try
         {
-            var logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ChestCounter", "trace.log");
+            var logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BurnaviourChestTracker", "trace.log");
             File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss.fff}] [MainGuiForm] OnFormClosing with reason: {e.CloseReason}, allowExit={_allowExit}\r\n");
         }
         catch { }

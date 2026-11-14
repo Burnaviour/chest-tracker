@@ -26,6 +26,7 @@
     </nav>
 
     <main class="body">
+      <div class="update-banner" id="updateBanner" hidden><span id="updateBannerText"></span><button type="button" class="btn small primary" id="updateBannerInstall" data-i18n="installUpdate">Install update</button></div>
       <!-- Dashboard -->
       <section id="tabStats" class="pane active">
         <div class="card row">
@@ -175,6 +176,18 @@
         <div class="card row">
           <label data-i18n="appZoom">App zoom</label>
           <span class="row tight"><button type="button" class="btn small" id="zoomOut" aria-label="Zoom out">−</button><output id="zoomValue">100%</output><button type="button" class="btn small" id="zoomIn" aria-label="Zoom in">+</button><button type="button" class="btn small" id="resetZoom" data-i18n="reset">Reset</button></span>
+        </div>
+        <div class="card">
+          <h2 class="row"><span data-i18n="updates">Updates</span><small><span data-i18n="version">Version</span> <span id="updateVersion"></span></small></h2>
+          <select id="updateMode" class="select wide" aria-label="Updates">
+            <option value="auto" data-i18n="updateAuto">Install updates automatically</option>
+            <option value="prompt" data-i18n="updatePrompt">Tell me when there is an update</option>
+            <option value="off" data-i18n="updateOff">Don't check for updates</option>
+          </select>
+          <p class="dim" id="updateStatus" role="status"></p>
+          <div class="row"><button type="button" class="btn" id="checkUpdate" data-i18n="checkUpdate">Check now</button><button type="button" class="btn primary" id="installUpdate" data-i18n="installUpdate" hidden>Install update</button><a class="btn" id="updateNotes" target="_blank" rel="noopener" data-i18n="updateNotes" hidden>What's new</a></div>
+          <p class="dim" data-i18n="updateHint"></p>
+          <p class="warn" id="updateSource" data-i18n="updateSource" hidden></p>
         </div>
         <p class="dim center" data-i18n="privacy"></p>
       </section>

@@ -97,7 +97,12 @@ public sealed class Config
     public bool StartWithFortnite { get; set; }
 
     /// <summary>"prompt" (offer new versions), "auto" (install them) or "off" (never check GitHub).</summary>
-    public string UpdateMode { get; set; } = "prompt";
+    /// <summary>"auto": install new versions between matches; "prompt": show them; "off": never check.</summary>
+    public string UpdateMode { get; set; } = "auto";
+    /// <summary>The last version the app tried to install by itself (each one is tried once).</summary>
+    public string? UpdateAttemptedTag { get; set; }
+    /// <summary>True once the player picked an update mode (before 0.1.2 there was no choice: "prompt" was only the default).</summary>
+    public bool UpdateModeChosen { get; set; }
     public bool OpenReportOnStart { get; set; } = false;
 
     /// <summary>Disabled by default as requested (no overlay for now).</summary>

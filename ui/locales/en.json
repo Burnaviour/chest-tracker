@@ -127,5 +127,19 @@
   "overlayLockHint": "Locked: it cannot move and clicks pass through it to the game. Unlock it to drag it somewhere else.",
   "keyLock": "lock / unlock",
   "keyShow": "show / hide",
-  "shortcutWarning": "Another program already uses one of these shortcuts, so it will not work here. Use the switches above instead."
+  "shortcutWarning": "Another program already uses one of these shortcuts, so it will not work here. Use the switches above instead.",
+  "updates": "Updates",
+  "updateAuto": "Install updates automatically",
+  "updatePrompt": "Tell me when there is an update",
+  "updateOff": "Don't check for updates",
+  "checkUpdate": "Check now",
+  "installUpdate": "Install update",
+  "updateNotes": "What's new",
+  "updateAvailable": "Version {version} is ready to install",
+  "updateLatest": "You have the latest version.",
+  "updateChecking": "Checking for updates…",
+  "updateDownloading": "Downloading version {version}…",
+  "updateRestarting": "Installing and restarting…",
+  "updateHint": "Updates come from the Burnaviour/chest-tracker releases on GitHub and are checked against their SHA-256 before they are installed. Automatic updates wait until a match is over.",
+  "updateSource": "Updates install only in the downloaded app. This copy runs from source."
 }

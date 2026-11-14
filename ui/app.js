@@ -239,6 +239,46 @@ async function saveBase(value) {
   } catch { toast('error'); }
 }
 
+// ---- Updates --------------------------------------------------------------------------------
+let update = null;
+function renderUpdate() {
+  if (!update) return;
+  const busy = update.state === 'downloading' || update.state === 'restarting';
+  const text = update.state === 'downloading' ? t('updateDownloading', { version: update.latest })
+    : update.state === 'restarting' ? t('updateRestarting')
+    : update.state === 'checking' ? t('updateChecking')
+    : update.error ? update.error
+    : update.hasUpdate ? t('updateAvailable', { version: update.latest })
+    : update.checkedAt ? t('updateLatest') : '';
+  $('updateVersion').textContent = update.current;
+  if (document.activeElement !== $('updateMode')) $('updateMode').value = update.mode;
+  $('updateStatus').textContent = text;
+  $('checkUpdate').disabled = busy || update.state === 'checking' || update.mode === 'off';
+  $('installUpdate').hidden = !update.hasUpdate || !update.canInstall || busy;
+  $('updateNotes').hidden = !update.hasUpdate || !update.notesUrl;
+  if (update.notesUrl) $('updateNotes').href = update.notesUrl;
+  $('updateSource').hidden = update.canInstall;
+  $('updateBanner').hidden = !busy && !(update.hasUpdate && update.canInstall);
+  $('updateBannerText').textContent = busy ? text : t('updateAvailable', { version: update.latest });
+  $('updateBannerInstall').hidden = busy;
+}
+async function loadUpdate() {
+  try { update = await api('/api/update'); renderUpdate(); } catch { /* the app is restarting or closed */ }
+}
+async function installUpdate() {
+  try { await api('/api/update/install', { method: 'POST' }); await loadUpdate(); } catch { toast('error'); }
+}
+$('checkUpdate').onclick = async () => {
+  $('checkUpdate').disabled = true; $('updateStatus').textContent = t('updateChecking');
+  try { update = await api('/api/update/check', { method: 'POST', signal: AbortSignal.timeout(25_000) }); } catch { toast('error'); }
+  renderUpdate();
+};
+$('installUpdate').onclick = installUpdate;
+$('updateBannerInstall').onclick = installUpdate;
+$('updateMode').onchange = async event => {
+  try { update = await api('/api/set-update-mode?mode=' + encodeURIComponent(event.target.value)); renderUpdate(); toast('saved'); } catch { toast('error'); }
+};
+
 // ---- Polling --------------------------------------------------------------------------------
 async function poll() {
   if (polling) return;
@@ -250,6 +290,7 @@ async function poll() {
     if (data.overlayOptions && !overlayDirty) showOverlayOptions(data.overlayOptions);
     if (!settingsLoaded) await loadSettings();
     await loadOverlayState();
+    await loadUpdate();
     // New chests or another profile: the hunt numbers change too
     const key = `${data.player}|${data.total}|${data.matches?.length}|${data.liveChests}`;
     if (key !== huntKey) { huntKey = key; await loadHunt(); }
@@ -270,7 +311,7 @@ $('language').addEventListener('change', async event => {
     await api('/api/set-language?code=' + encodeURIComponent(locale));
   } catch { toast('error'); }
 });
-document.addEventListener('languagechange', () => { renderDashboard(); renderTreasure(); });
+document.addEventListener('languagechange', () => { renderDashboard(); renderTreasure(); renderUpdate(); });
 $('profile').onchange = async event => {
   try { await api('/api/set-profile?key=' + encodeURIComponent(event.target.value)); page = 1; await poll(); } catch { toast('error'); }
 };
