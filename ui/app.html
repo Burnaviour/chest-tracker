@@ -63,6 +63,30 @@
           <div id="kinds" class="kinds"></div>
         </div>
 
+        <div class="card" id="fightsCard">
+          <h2><span data-i18n="fights">Your fights</span> <small id="fightsNote"></small></h2>
+          <div class="tiles">
+            <div class="tile"><b id="dmgDealt">0</b><span data-i18n="damageDealt">Damage / match</span></div>
+            <div class="tile"><b id="dmgTaken">0</b><span data-i18n="damageTaken">Damage taken / match</span></div>
+            <div class="tile"><b id="accuracy">0</b><span data-i18n="accuracy">Accuracy</span></div>
+            <div class="tile"><b id="bestDamage">0</b><span data-i18n="bestDamage">Best damage</span></div>
+            <div class="tile"><b id="assists">0</b><span data-i18n="assists">Assists</span></div>
+            <div class="tile"><b id="distance">0</b><span data-i18n="distance">km / match</span></div>
+            <div class="tile"><b id="structures">0</b><span data-i18n="structures">Building damage / match</span></div>
+            <div class="tile"><b id="revives">0</b><span data-i18n="revives">Revives</span></div>
+            <div class="tile" id="materialsTile"><b id="materials">0</b><span data-i18n="materials">Materials / match</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><span data-i18n="lootQuality">Loot from chests</span> <small id="lootNote"></small></h2>
+          <div id="loot" class="kinds"></div>
+          <div class="tiles two loot-tiles">
+            <div class="tile"><b id="goldPer100">0</b><span data-i18n="goldPer100">Legendary per 100 chests</span></div>
+            <div class="tile"><b id="bestLoot">—</b><span data-i18n="bestLoot">Most gold in one match</span></div>
+          </div>
+        </div>
+
         <div class="card">
           <h2 class="row"><span data-i18n="history">Match history</span><button type="button" class="btn small" id="export" data-i18n="export">Export CSV</button></h2>
           <div class="scroll">

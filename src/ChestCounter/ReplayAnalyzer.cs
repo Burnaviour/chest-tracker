@@ -89,7 +89,7 @@ public sealed class ReplayAnalyzer : FortniteReplayReader.ReplayReader
     private readonly List<GrantEvent> _grants = new();
 
     /// <summary>Bump when the analysis changes so that existing replays are re-analyzed.</summary>
-    public const int CurrentVersion = 9;
+    public const int CurrentVersion = 10; // 10: end-of-match stats (damage, accuracy, materials…)
 
     private static readonly bool ProbeDebug = Environment.GetEnvironmentVariable("CHESTCOUNTER_DEBUG") == "4";
 
@@ -739,6 +739,18 @@ public sealed class ReplayAnalyzer : FortniteReplayReader.ReplayReader
             IsBattleRoyale = !string.IsNullOrEmpty(replay.GameData?.CurrentPlaylist) || chests.Count > 0,
             Chests = chests,
             TreasureFinds = finds,
+            Stats = isRecorder && replay.Stats is { } st ? new MatchStats
+            {
+                Accuracy = st.Accuracy,
+                Assists = (int)st.Assists,
+                DamageDealt = (int)st.DamageToPlayers,
+                DamageTaken = (int)st.DamageTaken,
+                DamageToStructures = (int)st.DamageToStructures,
+                MaterialsGathered = (int)st.MaterialsGathered,
+                MaterialsUsed = (int)st.MaterialsUsed,
+                Revives = (int)st.Revives,
+                Traveled = st.TotalTraveled,
+            } : null,
         };
     }
 }

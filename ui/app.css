@@ -127,3 +127,10 @@ details summary { cursor: pointer; font-weight: 700; }
 .keys { font-size: 12px; color: var(--dim); }
 kbd { display: inline-block; padding: 1px 7px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 6px; background: var(--bg-deep); color: var(--text); font: 600 11px "Segoe UI", system-ui, sans-serif; }
 .update-banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; padding: 10px 14px; border-radius: var(--radius); border: 1px solid var(--gold); background: linear-gradient(160deg, #3a3118 0%, var(--card-2) 100%); font-weight: 600; color: var(--gold); }
+.kind i.r-common { background: var(--r-common, #8a949c); }
+.kind i.r-uncommon { background: #5aa63a; }
+.kind i.r-rare { background: #3d8fe0; }
+.kind i.r-epic { background: #a24ee0; }
+.kind i.r-legendary { background: #e0892f; }
+.kind i.r-mythic { background: #e8c33c; }
+.loot-tiles { margin-top: 14px; }

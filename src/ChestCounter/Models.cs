@@ -44,6 +44,22 @@ public sealed class TreasureFind
     public List<string> AlsoPossible { get; set; } = new();
 }
 
+/// <summary>The end-of-match stats Fortnite writes in the replay of the player who recorded it.</summary>
+public sealed class MatchStats
+{
+    /// <summary>Share of shots that hit, as Fortnite stores it.</summary>
+    public float Accuracy { get; set; }
+    public int Assists { get; set; }
+    public int DamageDealt { get; set; }
+    public int DamageTaken { get; set; }
+    public int DamageToStructures { get; set; }
+    public int MaterialsGathered { get; set; }
+    public int MaterialsUsed { get; set; }
+    public int Revives { get; set; }
+    /// <summary>Distance moved, in Fortnite's unit (centimetres).</summary>
+    public long Traveled { get; set; }
+}
+
 public sealed class MatchRecord
 {
     public string SessionId { get; set; } = "";
@@ -71,6 +87,8 @@ public sealed class MatchRecord
     public bool IsBattleRoyale { get; set; } = true;
     public List<ChestRecord> Chests { get; set; } = new();
     public List<TreasureFind> TreasureFinds { get; set; } = new();
+    /// <summary>Damage, accuracy, materials… (null for an older analysis or a replay recorded by someone else).</summary>
+    public MatchStats? Stats { get; set; }
 }
 
 public sealed class OverlayPreferences

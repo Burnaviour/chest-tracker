@@ -100,9 +100,44 @@ function renderMatches() {
   $('previous').disabled = page <= 1; $('next').disabled = page >= pages;
 }
 
+// ---- Fights and loot (from the end-of-match stats and the chest items) ---------------------------
+const RARITIES = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+function renderInsights(matches) {
+  const withStats = matches.filter(m => m.stats);
+  const avg = pick => withStats.length ? withStats.reduce((n, m) => n + pick(m.stats), 0) / withStats.length : 0;
+  const sum = pick => withStats.reduce((n, m) => n + pick(m.stats), 0);
+  $('fightsCard').hidden = !withStats.length;
+  $('fightsNote').textContent = t('fromMatches', { n: number(withStats.length) });
+  $('dmgDealt').textContent = number(avg(s => s.damageDealt), 0);
+  $('dmgTaken').textContent = number(avg(s => s.damageTaken), 0);
+  $('accuracy').textContent = number(avg(s => s.accuracy) * 100, 0) + '%';
+  $('bestDamage').textContent = number(Math.max(0, ...withStats.map(m => m.stats.damageDealt)));
+  $('assists').textContent = number(sum(s => s.assists));
+  $('distance').textContent = number(avg(s => s.traveled) / 100_000, 1);
+  $('structures').textContent = number(avg(s => s.damageToStructures), 0);
+  $('revives').textContent = number(sum(s => s.revives));
+  $('materials').textContent = number(avg(s => s.materialsGathered), 0);
+  $('materialsTile').hidden = !withStats.some(m => m.stats.materialsGathered > 0);
+
+  const loot = Object.fromEntries(RARITIES.map(r => [r, 0])), chests = matches.reduce((n, m) => n + (m.chests || 0), 0);
+  for (const m of matches) for (const [rarity, n] of Object.entries(m.loot || {})) loot[rarity] = (loot[rarity] || 0) + n;
+  const top = Math.max(1, ...Object.values(loot));
+  $('loot').replaceChildren(...RARITIES.map(rarity => {
+    const row = el('div', null, 'kind'), bar = el('i', null, 'r-' + rarity); bar.style.width = `${loot[rarity] / top * 100}%`;
+    const track = el('span'); track.append(bar);
+    row.append(el('span', t('rarity_' + rarity)), track, el('b', number(loot[rarity])));
+    return row;
+  }));
+  $('lootNote').textContent = t('weaponsAndItems');
+  $('goldPer100').textContent = chests ? number((loot.legendary + loot.mythic) / chests * 100, 1) : '0';
+  const best = matches.reduce((b, m) => Math.max(b, (m.loot?.legendary || 0) + (m.loot?.mythic || 0)), 0);
+  $('bestLoot').textContent = number(best);
+}
+
 // ---- Treasure Hunt --------------------------------------------------------------------------
 function renderTreasure() {
   const now = new Date(), summary = summarizeHunt(hunt.matches || [], now, hunt.liveChests || 0);
+  renderInsights(hunt.matches || []);
 
   // Chests by type (all saved replays), on the dashboard
   const kinds = Object.entries(summary.kinds).sort((a, b) => b[1] - a[1]), top = Math.max(1, ...kinds.map(k => k[1]));
