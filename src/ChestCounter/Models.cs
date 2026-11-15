@@ -106,6 +106,9 @@ public sealed class Config
     public string? UiLanguage { get; set; }
     public OverlayPreferences OverlayOptions { get; set; } = new();
     public int UiZoomPercent { get; set; } = 100;
+    /// <summary>Which matches the dashboard's stats count: "all", "1d", "7d", "30d", or a UTC time ("Start fresh").
+    /// Only a view: no match is deleted, and the total chest count always counts everything.</summary>
+    public string StatsFrom { get; set; } = "all";
 
     /// <summary>Selected profile (Epic id or name of the account the player plays on). Default null so it defaults to the latest match player.</summary>
     public string? Profile { get; set; }

@@ -37,8 +37,45 @@ function displayMode(playlist) {
   for (const [pattern, key] of [[/solo/, 'modeSolo'], [/duo/, 'modeDuo'], [/trio/, 'modeTrio'], [/squad/, 'modeSquad']]) if (pattern.test(mode)) parts.push(t(key));
   return parts.join(' · ');
 }
+// ---- Stats from: count only recent matches (e.g. to see how a new landing route does) -----------
+// Only a view: nothing is deleted, and the total chest count (and the overlays) keep counting everything.
+const RANGES = { all: 0, '1d': 86_400_000, '7d': 7 * 86_400_000, '30d': 30 * 86_400_000 };
+let statsFrom = 'all';
+/** When the counted matches start (ms), or null for all of them */
+function rangeStart(value = statsFrom, now = Date.now()) {
+  if (value in RANGES) return RANGES[value] ? now - RANGES[value] : null;
+  const at = Date.parse(value);
+  return Number.isFinite(at) ? at : null;
+}
+const inRange = iso => { const start = rangeStart(); return start === null || Date.parse(iso) >= start; };
+function renderRange(matches) {
+  const reset = !(statsFrom in RANGES), start = rangeStart();
+  const when = start === null ? '' : new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(start);
+  $('statsSinceOption').hidden = !reset;
+  $('statsSinceOption').textContent = reset ? t('rangeSince', { when }) : '';
+  if (document.activeElement !== $('statsFrom')) $('statsFrom').value = reset ? 'since' : statsFrom;
+  const chests = matches.reduce((n, m) => n + (Number(m.chestsOpened) || 0), 0);
+  $('statsRangeNote').textContent = start === null
+    ? t('rangeAllNote', { matches: number(matches.length) })
+    : matches.length ? t('rangeNote', { matches: number(matches.length), chests: number(chests), when }) : t('rangeEmpty', { when });
+  document.querySelector('.stats-range').classList.toggle('on', start !== null);
+}
+async function setStatsFrom(value) {
+  try {
+    statsFrom = (await api('/api/set-stats-from?value=' + encodeURIComponent(value))).statsFrom;
+    page = 1;
+    renderDashboard(); renderTreasure();
+    toast(value === 'now' ? 'freshStart' : 'saved');
+  } catch { toast('error'); }
+}
+
 function renderDashboard() {
-  const values = summarize(snapshot), matches = snapshot.matches || [];
+  // Every match of the profile (the history table only gets the latest 150), in the range "Stats from" picks
+  const every = hunt.matches?.length
+    ? hunt.matches.map(m => ({ matchStart: m.start, chestsOpened: m.chests, placement: m.placement, durationSeconds: m.seconds }))
+    : snapshot.matches || [];
+  const matches = every.filter(m => inRange(m.matchStart));
+  const values = { ...summarize({ ...snapshot, matches }), total: snapshot.total ?? 0 };
   for (const key of ['total', 'session', 'lastMatch', 'average', 'victories']) $(key).textContent = number(values[key]);
   $('best').textContent = number(Math.max(0, ...matches.map(m => Number(m.chestsOpened) || 0)));
   const seconds = matches.reduce((n, m) => n + (Number(m.durationSeconds) || 0), 0);
@@ -62,10 +99,10 @@ function renderDashboard() {
   }
   $('profile').hidden = accounts.length < 2;
   if (document.activeElement !== $('base')) $('base').value = snapshot.base ?? '';
-  renderChart(); renderMatches(); renderOverlayPreview();
+  renderRange(matches); renderChart(matches); renderMatches(); renderOverlayPreview();
 }
-function renderChart() {
-  const days = activityDays(snapshot.matches || []), max = Math.max(1, ...days.map(day => day.count));
+function renderChart(counted = snapshot.matches || []) {
+  const days = activityDays(counted), max = Math.max(1, ...days.map(day => day.count));
   const fmt = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' });
   $('chart').replaceChildren(...days.map(day => {
     const bar = el('div', null, 'bar' + (day.count ? '' : ' zero'));
@@ -77,8 +114,8 @@ function renderChart() {
   $('chartEmpty').hidden = days.some(day => day.count > 0);
   $('chart').setAttribute('aria-label', `${t('activity')} · ${t('last30')}`);
 }
-function renderMatches() {
-  const matches = [...(snapshot.matches || [])].sort((a, b) => new Date(b.matchStart) - new Date(a.matchStart));
+function renderMatches(counted = (snapshot.matches || []).filter(m => inRange(m.matchStart))) {
+  const matches = [...counted].sort((a, b) => new Date(b.matchStart) - new Date(a.matchStart));
   const pages = Math.max(1, Math.ceil(matches.length / 10)); page = Math.min(page, pages);
   const fmt = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   const rows = matches.slice((page - 1) * 10, page * 10).map(match => {
@@ -92,7 +129,7 @@ function renderMatches() {
     return row;
   });
   if (!rows.length) {
-    const row = el('tr'), cell = el('td', t('noMatches'), 'empty'); cell.colSpan = 5; row.append(cell); rows.push(row);
+    const row = el('tr'), cell = el('td', t(rangeStart() === null ? 'noMatches' : 'noMatchesInRange'), 'empty'); cell.colSpan = 5; row.append(cell); rows.push(row);
   }
   $('matchRows').replaceChildren(...rows);
   $('pagination').hidden = matches.length <= 10; $('export').disabled = !matches.length;
@@ -137,10 +174,13 @@ function renderInsights(matches) {
 // ---- Treasure Hunt --------------------------------------------------------------------------
 function renderTreasure() {
   const now = new Date(), summary = summarizeHunt(hunt.matches || [], now, hunt.liveChests || 0);
-  renderInsights(hunt.matches || []);
+  const counted = (hunt.matches || []).filter(m => inRange(m.start));
+  renderInsights(counted);
 
-  // Chests by type (all saved replays), on the dashboard
-  const kinds = Object.entries(summary.kinds).sort((a, b) => b[1] - a[1]), top = Math.max(1, ...kinds.map(k => k[1]));
+  // Chests by type, on the dashboard (the matches "Stats from" counts)
+  const kindTotals = {};
+  for (const m of counted) for (const [kind, n] of Object.entries(m.kinds || {})) kindTotals[kind] = (kindTotals[kind] || 0) + n;
+  const kinds = Object.entries(kindTotals).sort((a, b) => b[1] - a[1]), top = Math.max(1, ...kinds.map(k => k[1]));
   $('kinds').replaceChildren(...(kinds.length ? kinds.map(([name, count]) => {
     const row = el('div', null, 'kind'), bar = el('i'); bar.style.width = `${count / top * 100}%`;
     const track = el('span'); track.append(bar);
@@ -205,7 +245,7 @@ function renderTreasure() {
 }
 async function loadHunt() {
   try { hunt = await api('/api/treasure'); } catch { /* keep the last one */ }
-  renderTreasure();
+  renderTreasure(); renderDashboard();
 }
 
 // ---- Overlay --------------------------------------------------------------------------------
@@ -259,6 +299,7 @@ async function loadSettings() {
     $('folder').value = data.demosFolder || ''; $('startup').checked = !!data.startWithWindows;
     showZoom(data.uiZoomPercent);
     $('gameOverlay').checked = !!data.gameOverlay;
+    if (typeof data.statsFrom === 'string') statsFrom = data.statsFrom;
     $('fullscreenWarning').hidden = data.fortniteWindowMode !== 0;
     document.querySelectorAll('.version').forEach(node => { node.textContent = data.version || ''; });
     if (/^v\d+\.\d+\.\d+$/.test(data.version || '')) $('requestFeature').href = `https://burnaviour.dev/request/?for=chest-tracker&v=${data.version.slice(1)}`;
@@ -353,8 +394,10 @@ $('profile').onchange = async event => {
 };
 $('previous').onclick = () => { page--; renderMatches(); };
 $('next').onclick = () => { page++; renderMatches(); };
+$('statsFrom').onchange = event => { if (event.target.value !== 'since') setStatsFrom(event.target.value); };
+$('statsReset').onclick = () => setStatsFrom('now');
 $('export').onclick = () => {
-  const url = URL.createObjectURL(new Blob([matchesCsv(snapshot.matches || [])], { type: 'text/csv;charset=utf-8' }));
+  const url = URL.createObjectURL(new Blob([matchesCsv((snapshot.matches || []).filter(m => inRange(m.matchStart)))], { type: 'text/csv;charset=utf-8' }));
   const link = el('a'); link.href = url; link.download = 'burnaviour-chests.csv'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 $('target').onchange = renderTreasure;

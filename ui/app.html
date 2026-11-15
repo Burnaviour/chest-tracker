@@ -37,6 +37,25 @@
           <select id="profile" class="select" aria-label="Player profile"></select>
         </div>
 
+        <div class="card stats-range">
+          <div class="row">
+            <div>
+              <div class="eyebrow" data-i18n="statsFrom">Stats from</div>
+              <div class="dim" id="statsRangeNote"></div>
+            </div>
+            <span class="row tight">
+              <select id="statsFrom" class="select" aria-label="Stats from">
+                <option value="all" data-i18n="rangeAll">All matches</option>
+                <option value="1d" data-i18n="range1d">Last 24 hours</option>
+                <option value="7d" data-i18n="range7d">Last 7 days</option>
+                <option value="30d" data-i18n="range30d">Last 30 days</option>
+                <option value="since" id="statsSinceOption" hidden></option>
+              </select>
+              <button type="button" class="btn small primary" id="statsReset" data-i18n="startFresh">Start fresh</button>
+            </span>
+          </div>
+        </div>
+
         <div class="card hero">
           <div class="eyebrow" data-i18n="total">Chests tracked</div>
           <div class="big" id="total">0</div>

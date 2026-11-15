@@ -134,3 +134,5 @@ kbd { display: inline-block; padding: 1px 7px; border: 1px solid var(--border); 
 .kind i.r-legendary { background: #e0892f; }
 .kind i.r-mythic { background: #e8c33c; }
 .loot-tiles { margin-top: 14px; }
+.stats-range.on { border-color: var(--gold); }
+.stats-range .select { max-width: 190px; }

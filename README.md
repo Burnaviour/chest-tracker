@@ -28,6 +28,7 @@ The file is not code-signed, so Windows may show "Windows protected your PC" the
 | Tab | What it shows |
 | --- | --- |
 | **Dashboard** | Chests tracked, last match, this session, chests per match, best match, chests per minute, wins, chests by type, your fights (damage dealt and taken, accuracy, assists, distance, building damage), loot from chests by rarity (legendary per 100 chests), 30-day activity, match history (CSV export). |
+| **Stats from** | On the dashboard: count only the last 24 hours, 7 or 30 days, or **Start fresh** from now, to see how a new landing route does. Nothing is deleted; the total chest count and the overlays keep counting everything. |
 | **Treasure Hunt** | Countdown to the next Treasure Hour in your local time. Chests this week and this hunt. Your chance so far for each treasure, from Epic's published odds. How many chests a 50% or 90% chance takes, and where your own pace gets you by the finale. Every treasure found, with date and source. |
 | **Stream overlay** | A chest counter for OBS, at `http://localhost:5088/overlay`. |
 | **Settings** | Starting chest count, replay folder, start with Windows, on-screen counter, zoom, 18 languages. |

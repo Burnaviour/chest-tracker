@@ -163,5 +163,17 @@
   "rarity_mythic": "Mythic",
   "goldPer100": "Legendary per 100 chests",
   "bestLoot": "Most gold in one match",
-  "requestFeature": "Request a feature"
+  "requestFeature": "Request a feature",
+  "statsFrom": "Stats from",
+  "rangeAll": "All matches",
+  "range1d": "Last 24 hours",
+  "range7d": "Last 7 days",
+  "range30d": "Last 30 days",
+  "rangeSince": "Since {when}",
+  "startFresh": "Start fresh",
+  "rangeAllNote": "Counting all {matches} matches. Start fresh to test a new route.",
+  "rangeNote": "{matches} matches, {chests} chests since {when}. Your total still counts everything.",
+  "rangeEmpty": "Nothing since {when} yet. Play a match to see your new numbers.",
+  "freshStart": "Stats start now. Your older matches are kept.",
+  "noMatchesInRange": "No matches in this range yet."
 }

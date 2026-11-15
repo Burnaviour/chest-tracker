@@ -275,7 +275,7 @@ public static class WebDashboardServer
                 var startWithFn = _config?.StartWithFortnite ?? false;
 
                 var overlayOptions = System.Text.Json.JsonSerializer.Serialize(_config?.OverlayOptions ?? new(), new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
-                var json = $"{{\"demosFolder\":\"{EscapeJson(demosFolder)}\",\"startWithWindows\":{(isStartup ? "true" : "false")},\"startWithFortnite\":{(startWithFn ? "true" : "false")},\"fortniteWindowMode\":{FortniteWindowMode()},\"gameOverlay\":{((_config?.ShowOverlay ?? false) && OperatingSystem.IsWindows() && NativeOverlay.IsVisible ? "true" : "false")},\"baseChestCount\":{baseStr},\"activeProfile\":\"{EscapeJson(activePlayer)}\",\"uiLanguage\":\"{EscapeJson(_config?.UiLanguage ?? _config?.Language ?? "en")}\",\"version\":\"{AppInfo.DisplayVersion}\",\"overlayOptions\":{overlayOptions},\"uiZoomPercent\":{UiZoomPercent}}}";
+                var json = $"{{\"demosFolder\":\"{EscapeJson(demosFolder)}\",\"startWithWindows\":{(isStartup ? "true" : "false")},\"startWithFortnite\":{(startWithFn ? "true" : "false")},\"fortniteWindowMode\":{FortniteWindowMode()},\"gameOverlay\":{((_config?.ShowOverlay ?? false) && OperatingSystem.IsWindows() && NativeOverlay.IsVisible ? "true" : "false")},\"baseChestCount\":{baseStr},\"activeProfile\":\"{EscapeJson(activePlayer)}\",\"uiLanguage\":\"{EscapeJson(_config?.UiLanguage ?? _config?.Language ?? "en")}\",\"version\":\"{AppInfo.DisplayVersion}\",\"overlayOptions\":{overlayOptions},\"uiZoomPercent\":{UiZoomPercent},\"statsFrom\":\"{EscapeJson(_config?.StatsFrom ?? "all")}\"}}";
                 var bytes = Encoding.UTF8.GetBytes(json);
                 res.ContentLength64 = bytes.Length;
                 res.OutputStream.Write(bytes, 0, bytes.Length);
@@ -298,6 +298,17 @@ public static class WebDashboardServer
                     WriteJson(res, new { ok = true });
                 }
                 catch { res.StatusCode = 400; res.Close(); }
+                return;
+            }
+            if (path.Equals("/api/set-stats-from", StringComparison.OrdinalIgnoreCase))
+            {
+                if (_config == null || _store == null) { res.StatusCode = 503; res.Close(); return; }
+                var value = req.QueryString["value"] ?? "";
+                if (value == "now") value = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
+                else if (value is not ("all" or "1d" or "7d" or "30d")) { res.StatusCode = 400; res.Close(); return; }
+                _config.StatsFrom = value;
+                _store.SaveConfig(_config);
+                WriteJson(res, new { ok = true, statsFrom = value });
                 return;
             }
             if (path.Equals("/api/set-zoom", StringComparison.OrdinalIgnoreCase))
