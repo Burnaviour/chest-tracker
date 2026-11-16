@@ -176,8 +176,8 @@
   "rangeEmpty": "Nothing since {when} yet. Play a match to see your new numbers.",
   "freshStart": "Stats start now. Your older matches are kept.",
   "noMatchesInRange": "No matches in this range yet.",
-  "unnamedPrize": "Gold treasure from a golden chest",
+  "unnamedPrize": "Gold treasure (item can't be read from the replay)",
   "namePrize": "What was it?",
   "renamePrize": "Rename",
-  "namePrizePrompt": "Which gold treasure did this golden chest give you? For example: Solid Gold pickaxe, gold car, Jam Track."
+  "namePrizePrompt": "Fortnite's replay only says you found gold treasure, not which item. Check your locker and type what it was, for example: Solid Gold pickaxe, Jam Track, loading screen."
 }
