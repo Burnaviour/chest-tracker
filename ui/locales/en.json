@@ -175,5 +175,9 @@
   "rangeNote": "{matches} matches, {chests} chests since {when}. Your total still counts everything.",
   "rangeEmpty": "Nothing since {when} yet. Play a match to see your new numbers.",
   "freshStart": "Stats start now. Your older matches are kept.",
-  "noMatchesInRange": "No matches in this range yet."
+  "noMatchesInRange": "No matches in this range yet.",
+  "unnamedPrize": "Gold treasure from a golden chest",
+  "namePrize": "What was it?",
+  "renamePrize": "Rename",
+  "namePrizePrompt": "Which gold treasure did this golden chest give you? For example: Solid Gold pickaxe, gold car, Jam Track."
 }

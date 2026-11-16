@@ -136,3 +136,4 @@ kbd { display: inline-block; padding: 1px 7px; border: 1px solid var(--border); 
 .loot-tiles { margin-top: 14px; }
 .stats-range.on { border-color: var(--gold); }
 .stats-range .select { max-width: 190px; }
+.name-prize { margin-left: 8px; padding: 2px 8px; font-size: 11px; }

@@ -238,10 +238,27 @@ function renderTreasure() {
   const when = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   $('finds').replaceChildren(...(summary.finds.length ? summary.finds.map(find => {
     const item = el('li', null, find.type === 'prize' ? 'prize' : '');
-    const name = find.type === 'prize' && /^Unknown treasure/i.test(find.name) ? `${t('goldTreasure')} (${(find.prizeId || '').split(':').pop()})` : find.name;
-    item.append(el('b', name), el('span', `${when.format(find.when)} · ${t('from')} ${find.source}`));
+    const unnamed = find.type === 'prize' && /^Unknown treasure/i.test(find.name);
+    const name = find.type === 'prize' ? (unnamed ? t('unnamedPrize') : `${t('goldTreasure')}: ${find.name}`) : find.name;
+    const label = el('b', name);
+    if (find.type === 'prize' && find.prizeId) {
+      // The replay only says which gold prize it was (an id), not the item: the player names it once
+      const button = el('button', t(unnamed ? 'namePrize' : 'renamePrize'), 'btn small name-prize');
+      button.type = 'button';
+      button.onclick = () => namePrize(find.prizeId, unnamed ? '' : find.name);
+      label.append(' ', button);
+    }
+    item.append(label, el('span', `${when.format(find.when)} · ${t('from')} ${find.source}`));
     return item;
   }) : [el('li', t('noFinds'))]));
+}
+async function namePrize(prizeId, current) {
+  const name = window.prompt(t('namePrizePrompt'), current);
+  if (name === null) return;
+  try {
+    await api('/api/name-treasure', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prizeId, name: name.trim().slice(0, 60) }) });
+    await loadHunt(); toast('saved');
+  } catch { toast('error'); }
 }
 async function loadHunt() {
   try { hunt = await api('/api/treasure'); } catch { /* keep the last one */ }

@@ -300,6 +300,23 @@ public static class WebDashboardServer
                 catch { res.StatusCode = 400; res.Close(); }
                 return;
             }
+            if (path.Equals("/api/name-treasure", StringComparison.OrdinalIgnoreCase))
+            {
+                if (req.HttpMethod != "POST") { res.StatusCode = 405; res.Close(); return; }
+                if (_store == null || req.ContentLength64 > 1024) { res.StatusCode = 400; res.Close(); return; }
+                try
+                {
+                    using var doc = System.Text.Json.JsonDocument.Parse(req.InputStream);
+                    var id = doc.RootElement.GetProperty("prizeId").GetString() ?? "";
+                    var name = (doc.RootElement.GetProperty("name").GetString() ?? "").Trim();
+                    if (!System.Text.RegularExpressions.Regex.IsMatch(id, @"^DelilahPrize:dpid_item\d{1,4}$") || name.Length > 60 || name.Any(char.IsControl))
+                    { res.StatusCode = 400; res.Close(); return; }
+                    _store.NamePrize(id, name);
+                    WriteJson(res, new { ok = true });
+                }
+                catch { res.StatusCode = 400; res.Close(); }
+                return;
+            }
             if (path.Equals("/api/set-stats-from", StringComparison.OrdinalIgnoreCase))
             {
                 if (_config == null || _store == null) { res.StatusCode = 503; res.Close(); return; }

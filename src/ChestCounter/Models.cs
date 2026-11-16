@@ -265,6 +265,15 @@ public sealed class Store
         }
     }
 
+    /// <summary>Names a gold treasure (what the golden chest gave), for every match it was found in. Empty = unnamed.</summary>
+    public void NamePrize(string id, string name)
+    {
+        var names = Load<Dictionary<string, string>>(PrizeNamesPath) ?? DefaultPrizeNames;
+        names[id] = name;
+        TreasureNames.PrizeNames[id] = name;
+        Save(PrizeNamesPath, names);
+    }
+
     /// <summary>Adds unknown prize ids to treasures.json so the user can name them. Returns the new ids.</summary>
     public List<string> RegisterPrizeIds(IEnumerable<string> ids)
     {
